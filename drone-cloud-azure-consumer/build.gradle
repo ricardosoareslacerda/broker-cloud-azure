@@ -1,0 +1,66 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.6'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id("com.github.johnrengelman.processes") version "0.5.0"
+	id "com.microsoft.azure.azurewebapp" version "1.2.0"
+	id 'java'
+}
+
+group = 'br.com.fiap.broker'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+	implementation 'org.projectlombok:lombok:1.18.20'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+	implementation 'commons-io:commons-io:2.11.0'
+	implementation 'com.google.code.gson:gson:2.8.2'
+	implementation 'com.github.joschi.jackson:jackson-datatype-threetenbp:2.6.4'
+	implementation 'javax.xml.bind:jaxb-api'
+	implementation 'org.springframework:spring-context-support:5.2.8.RELEASE'
+
+	compileOnly 'org.projectlombok:lombok'
+	compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
+
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+}
+
+azurewebapp {
+	subscription = '23ecd19e-8d35-4d03-abae-5232d743f72b'
+	resourceGroup = 'rscgrp-broker-cloud'
+	appName = 'app-drone-broker-cloud-consumer'
+	pricingTier = 'P1v2'
+	region = 'brazilsouth'
+	runtime {
+		os = 'Linux'
+		webContainer = 'Java SE' // or 'Java SE' if you want to run an executable jar
+		javaVersion = 'Java 11'
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

@@ -1,0 +1,65 @@
+------------------------------------------------------
+Entrega Trabalho - 12/09/2022
+------------------------------------------------------
+https://github.com/Azure-Samples/java-on-azure-examples/tree/main/containerapp
+
+- WebApp 
+	- Tem que associar a uma Virtual networks
+		- NatGateway
+Cosmos DB	- 3h 21m
+
+Subscription
+fiap-subscription
+
+Grupo de Recursos
+resource-group-fiap-drone
+
+resourse-group-fiap-work-final
+
+Requisitos 
+------------------------------------------------------
+- Entregar Diagrama de Arquitetura de Solução Azure			
+- Explicar a solução bem como os serviços se comunicam
+- Apresentar Solução funcionando na Azure
+	1. Apresentação do projeto
+	2. Escolha de plataforma cloud
+	3. Arquitetura -> Exponha o que está fazendo (Drawio)
+	4. Ferramentas
+	5. Demostração 
+		- Video Funcionando
+		
+- Entregar Diagrama de Arquitetura de Solução Azure
+	- Exponha o que está fazendo (Drawio)
+		- Ex.:
+			- Front-End 
+				- (Api - Swagger)
+				- Web
+				- Mobile
+				- Swagger
+				- PostMan
+			- Request
+			- Mensagem Service Bus
+			- Grava na Table
+			
+		- Nó Armazenamento 
+			- DBaaS, Objetos
+			
+		- Ferramentas
+			- DevOps, 
+			- Integração Continua (CI/CD)
+			- Runtime
+			- Containers
+			- Fila 
+
+------------------------------------------------------ 
+Serverless
+	- Azure Functions
+	
+DevOps
+	- Pipeline, Infra as Code, Azure DevOps
+	
+CI/CD
+	- Integração 
+	- Entrega
+	- Implementação Continua
+	- Azure Pipeline

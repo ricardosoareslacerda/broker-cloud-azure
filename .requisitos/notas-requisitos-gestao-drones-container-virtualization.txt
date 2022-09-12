@@ -1,0 +1,48 @@
+https://github.com/ricardosoareslacerda/broker-drone-cluster-monitor
+---------------------------------------------------------------------------
+Container & Virtualization
+---------------------------------------------------------------------------
+- aplicacao de jobs de drones para cada 10 segundos enviar informações do drone para um serviço rest
+	- instancias de drones no job 
+- producer recebe os dados via rest, posta no topico do kafka
+- consumer recebe os dados loga e gera um alerta quando os dados estiverem fora dos padrões
+	- temperatura >= 35 ou <= 0
+	- umidade <= 15%
+
+- drone-cluster-monitor-job
+---------------------------------------------------------------------------
+	- DroneScheduller
+		- cron-scheduller de 10/10s 
+	- DroneJob
+		- execute
+	- DroneJobBusiness
+		- cria um drono randomico
+		- envia dados drone
+	- DroneServices
+		- envia para o serviço rest
+	
+- drone-cluster-monitor-producer
+---------------------------------------------------------------------------
+	- controller
+		- recebe dados drone
+	- producer
+		- envia para o topico
+		
+- drone-cluster-monitor-consumer
+---------------------------------------------------------------------------
+	- listener
+		recebe dados drone
+		id, dronevo
+	- business
+		- logar
+		- validar dados drone
+			- enviar alerta e-mail quando:
+				- temperatura >= 35 ou <= 0
+				- umidade <= 15%
+	- services
+		- persisty
+		- enviar e-mail
+			- sendMail
+				- getTemplateMail
+
+---------------------------------------------------------------------------

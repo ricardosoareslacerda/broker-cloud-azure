@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+    kafka-ui:
+        container_name: kafka-ui
+        image: provectuslabs/kafka-ui:latest
+        ports:
+          - 8081:8081
+        environment:
+          KAFKA_CLUSTERS_0_NAME: local
+          KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: https://drone-namespace.servicebus.windows.net:9093
+          KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SASL_SSL
+          KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM: PLAIN
+          KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: 'org.apache.kafka.common.security.plain.PlainLoginModule required username="$ConnectionString" password="Endpoint=sb://drone-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=2bRhIcykgcCZXn92fG8QZL7vOsDo1gMO/kO8vUZvnaU=;EntityPath=drone-topic";'
+
+# Networks to be created to facilitate communication between containers
+networks:
+    broker-net:
+        name: broker-net

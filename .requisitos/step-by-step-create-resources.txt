@@ -1,0 +1,148 @@
+Step by Step - Kafka (Event Hub, Consumer/Producer), Mongo (Docker), Mongo Express  (Docker)
+
+/* Para iniciar se faz necessário algumas configurações no Azure, são elas:*/ 
+** - Registro de Login no Portal Azure
+** - Criação de uma Assinatura (Subscription)
+** - Criação de um Grupo de Recursos (Resource Group) - Recursos agrupados
+** - Criação de um plano de serviço de aplicativos
+
+0 - Terminal Power Shell
+1 - az login --use-device-code
+2 - az account set -s subscription-student-mypersonal
+3 - az group create --name rscgrp-broker-cloud --location brazilsouth
+4 - az appservice plan create --resource-group rscgrp-broker-cloud --name appsvcplan-broker-cloud --location brazilsouth  --sku FREE --is-linux
+
+---------------------------------
+Step by Step - MongoDb / MongoExpress
+---------------------------------
+- References
+1 - docker context create aci --resource-group rscgrp-broker-cloud aci-broker-cloud --location brazilsouth
+
+2 - docker context use aci-broker-cloud
+
+3 - docker compose --file stack-cloud-azure-database.yml up
+
+4 - docker ps -a 
+
+5 - copia os url dos container Mongo Express
+	- mongo-dronedb.brazilsouth.azurecontainer.io:8081
+		- root
+		- MongoExpress2022!
+
+6 - Create Database 'drones'
+
+---------------------------------
+Step by Step - Event Hubs Kafka
+---------------------------------
+- References
+-> https://docs.microsoft.com/pt-br/azure/event-hubs/event-hubs-create
+-> https://docs.microsoft.com/pt-br/azure/event-hubs/event-hubs-quickstart-kafka-enabled-event-hubs
+-> https://github.com/Azure/azure-event-hubs-for-kafka
+
+1 - az eventhubs namespace create --resource-group rscgrp-broker-cloud --name drone-namespace --location brazilsouth --sku Standard --enable-kafka true --enable-auto-inflate false  --tags tag1=vrs-1.0-drone-namespace
+- serviceBusEndpoint: https://drone-namespace.servicebus.windows.net:443/
+- serviceBusEndpointKafka: drone-namespace.servicebus.windows.net:9093
+
+2 - az eventhubs eventhub create --resource-group rscgrp-broker-cloud --namespace-name drone-namespace --name drone-topic --partition-count 1
+
+3 - az eventhubs eventhub authorization-rule create --resource-group rscgrp-broker-cloud --namespace-name drone-namespace --eventhub-name drone-topic --name authorization-drone-namespace --rights Manage Send Listen
+
+4 - az eventhubs eventhub authorization-rule keys list --resource-group rscgrp-broker-cloud --namespace-name drone-namespace --eventhub-name drone-topic --name authorization-drone-namespace 
+
+5 - /**** Lista as autorizações para o namespace Events Hub criado ****/
+  -	/** Copiar o conteúdo primaryConnectionString conforme exemplo abaixo: **/
+	Ex.:
+	- Endpoint=sb://drone-namespace.servicebus.windows.net/;SharedAccessKeyName=authorization-drone-namespace;SharedAccessKey=3maslymZqSpRWRwX7PMp3WmXwMZRYhe6quBF9g0BPTM=;EntityPath=drone-topic
+  - /** Posteriormente irá colar nas configurações dos aplicativos Producer e Consumer **/
+
+---------------------------------
+Step by Step - Applications
+---------------------------------
+/*** drone-cloud-azure-consumer ***/
+1 - Editar se necessário - build.gradle em azurewebapp {...
+	- resourceGroup = 'rscgrp-broker-cloud'
+	- appName = 'app-drone-broker-cloud-consumer'
+	- pricingTier = 'P1v2'
+	- region = 'brazilsouth'
+	
+2 - Editar 'spring.kafka.properties.sasl.jaas.config' em application-properties
+	- Colar primaryConnectionString copiada acima
+	
+3 - Executar - gradle azurewebapp
+
+
+/*** drone-cloud-azure-producer ***/
+1 - Editar se necessário - build.gradle em azurewebapp {...
+	- resourceGroup = 'rscgrp-broker-cloud'
+	- appName = 'app-drone-broker-cloud-producer'
+	- pricingTier = 'P1v2'
+	- region = 'brazilsouth'
+	
+2 - Editar 'spring.kafka.properties.sasl.jaas.config' em application-properties
+	- Colar primaryConnectionString copiada acima
+	
+3 - Executar - gradle azurewebapp
+
+4 - URL do aplicativo producer https://app-drone-broker-cloud-producer.azurewebsites.net
+
+5 - Acesso SwaggerUI 
+	- https://app-drone-broker-cloud-producer.azurewebsites.net/api/v2/drones-monitor/swagger-ui/
+	Teste PUT - JSON
+	{
+	  "id": "drone10",
+	  "name": "Drone Sao Paulo Leste",
+	  "latitude": -23.5,
+	  "longitude": -46.6,
+	  "temperature": 77.0795392390535738513790420256555080413818359375,
+	  "humidity": 55.07025929504701622363427304662764072418212890625,
+	  "rastreability": true,
+	  "lastUpdate": "2022-04-18T07:25:35.006"
+	}
+
+6 - Email enviado - Assunto 'Drone Alert Information - Drone Falling'
+	- Instruções de configuração no projeto /*** drone-cloud-azure-consumer ***/
+	
+7 - http://mongo-dronedb.brazilsouth.azurecontainer.io:8081/
+		- root
+		- MongoExpress2022!
+		- Database: drones
+		- Para conferências dos dados
+
+
+/*** drone-cloud-azure-job ***/
+1 - Editar se necessário - build.gradle em azurewebapp {...
+	- resourceGroup = 'rscgrp-broker-cloud'
+	- appName = 'app-drone-broker-cloud-job'
+	- pricingTier = 'P1v2'
+	- region = 'brazilsouth'
+	
+2 - Executar - gradle azurewebapp
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DELETE RESOURCES
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Docker Resources
+- MongoDb
+- Mongo Express
+docker context use aci-broker-cloud
+
+docker compose --file stack-cloud-azure-database.yml down --project-name docker-compose-stacks
+
+docker ps -a 
+
+-- Service - Job
+az webapp delete --name app-drone-broker-cloud-job --resource-group rscgrp-broker-cloud
+
+-- Service - Producer
+az webapp delete --name app-drone-broker-cloud-producer --resource-group rscgrp-broker-cloud
+
+WebApp Resources
+-- Service - Consumer
+az webapp delete --name app-drone-broker-cloud-consumer --resource-group rscgrp-broker-cloud
+
+Event Hub
+az eventhubs namespace delete --name drone-namespace --resource-group rscgrp-broker-cloud
+
+Resouce Group
+az group delete --name rscgrp-broker-cloud

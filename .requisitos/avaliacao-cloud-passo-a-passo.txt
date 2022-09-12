@@ -1,0 +1,215 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+Step by Step - KAFKA - Docker
+Azure Account
+	- Subscription
+		- subscription-student-mypersonal
+	- Resource Group
+		- rscgp-broker-drone-cloud
+	- Container Register
+		- acs-swarm-broker-drone-cloud
+		
+1. 
+az login --use-device-code
+
+2. 
+az account set -s subscription-student-mypersonal
+
+3. 
+az group create --name rscgp-broker-drone-cloud --location brazilsouth
+
+4. 
+Plano de serviço
+az appservice plan create --name appserviceplan-broker-drone-cloud --resource-group rscgp-broker-drone-cloud --location brazilsouth  --sku FREE --is-linux
+
+
+http://drone-cloud-azure-producer.azurewebsites.net:80/api/v1/drones-monitor/drones/register/drone1
+
+Step by Step - KAFKA - Event Hub 
+https://docs.microsoft.com/pt-br/azure/event-hubs/event-hubs-create
+https://docs.microsoft.com/pt-br/azure/event-hubs/event-hubs-quickstart-kafka-enabled-event-hubs
+
+az eventhubs namespace create --name drone-namespace --resource-group rscgp-broker-drone-cloud --location brazilsouth --enable-kafka true --enable-auto-inflate false --sku Standard_LRS
+
+az eventhubs eventhub create --name drone-topic --resource-group rscgp-broker-drone-cloud --namespace-name drone-namespace --partition-count 1
+
+az eventhubs eventhub authorization-rule create --name namespace-broker-drone-cloud --rights Manage --resource-group rscgp-broker-drone-cloud --namespace-name drone-namespace --eventhub-name drone-topic
+
+az eventhubs eventhub authorization-rule keys list --name namespace-broker-drone-cloud --resource-group rscgp-broker-drone-cloud --namespace-name drone-namespace --eventhub-name drone-topic --name namespace-broker-drone-cloud
+
+Endpoint=sb://drone-group.servicebus.windows.net/;SharedAccessKeyName=namespace-broker-drone-cloud;SharedAccessKey=IBwqaVLWe+/FJv8YUAsdjIMlRYNMgyl4ln7vGrcZbpI=
+--------------------------------------------------------------------------------------
+az login --use-device-code
+  
+docker context create aci aci-broker-drone-cloud --resource-group rscgp-broker-drone-cloud --location brazilsouth
+
+docker context use aci-broker-drone-cloud
+
+docker compose --file stack-cloud-azure-database.yml up
+docker compose --file stack-cloud-azure-database.yml down
+
+
+Docker Multi Container
+az webapp create --name webapp-broker-drone-cloud --multicontainer-config-type compose --multicontainer-config-file stack-cloud-azure-broker-server.yml --resource-group rscgp-broker-drone-cloud --plan appserviceplan-broker-drone-cloud 
+--------------------------------------------------------------------------------------
+Docker - Azure (Deploy/Publish)
+--------------------------------------------------------------------------------------
+az login --use-device-code
+
+az webapp deployment user set --user-name school --password xxxxxx
+
+az group create --name appservicelinux --location "West Europe"
+
+az appservice plan create --name serviceplanliux --resource-group appservicelinux --sku FREE --is-linux
+
+az webapp create --name treinamentoazuzre-snlinux --resource-group appservicelinux --plan serviceplanliux  --runtime "Java 8" -- deployment-local-git  
+az --% webapp create --name treinamentoazuzre-snlinux --resource-group appservicelinux --plan serviceplanliux -- deployment-container-image ricardosoareslacerda/broker-drone-cluster-monitor
+
+az webapp config appsetting set --name treinamentoazuzre-snlinux --resource-group appservicelinux --setting WEBSITES_PORT=8000
+
+az webapp list-runtimes --linux
+
+az webapp delete --name --resource-group rscgp-broker-drone-cloud
+
+--------------------------------------------------------------------------------------
+Azure Container Register - Azure Cli - Deploy / Publishing Applications
+--------------------------------------------------------------------------------------
+
+
+az acr create --name dronerregister --resource-group resourse-group-fiap-work-final --sku standard --admin-enabled true
+
+{
+  "passwords": [
+    {
+      "name": "password",
+      "value": "gPOqyPVds2UsYfdxkNPg4swklljHLgQ="
+    },
+    {
+      "name": "password2",
+      "value": "MReUNy1fr/S=pw3kN+lJesWzv4b+EEqA"
+    }
+  ],
+  "username": "dronerregister"
+}
+
+docker login dronerregister.azurecr.io
+
+git clone https://github.com/ricardosoareslacerda/broker-drone-cluster-monitor.git
+
+az webapp create --name webapp-broker-drone-cloud --multicontainer-config-type compose --multicontainer-config-file stack-cloud-azure-broker-server.yml --resource-group rscgp-broker-drone-cloud --plan appserviceplan-broker-drone-cloud 
+
+
+-- Connection String Webapp -> SqlDb
+https://www.schoolofnet.com/curso/azure/azure-fundamentos/azure-web-apps-rev2/10561
+
+
+Dockerizando
+-------------------------------------
+Deploy aplicação no Linux - Azure
+https://www.schoolofnet.com/curso/azure/azure-fundamentos/azure-web-apps-rev2/10561
+
+Dockerizando
+-------------------------------------
+https://www.schoolofnet.com/curso/containers/kubernetes/canary-releases-parte1/11970
+
+Docker no Azure
+-------------------------------------
+https://www.schoolofnet.com/curso/containers/docker-em-producao/docker-no-azure/
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+Azure Cli - Deploy / Publishing Applications
+--------------------------------------------------------------------------------------
+
+Applications Deploy - Azure Cli
+-------------------------------------
+https://www.schoolofnet.com/curso/azure/azure-fundamentos/azure-web-apps-rev2/
+https://www.schoolofnet.com/curso/azure/azure-fundamentos/iniciando-com-azure-rev2/6761
+
+az webapp deployment user set --user-name school --password 
+
+az group create --name appservicelinux --location "West Europe"
+
+az appservice plan create --name serviceplanliux --resource-group appservicelinux --sku S1 --is-linux
+
+az webapp create --resource-group appservicelinux --plan serviceplanliux --name treinamentoazuzre-snlinux --runtime "Java 8" -- deployment-local-git  
+
+no final cria um git no azure
+
+
+Applications Deploy - Azure Cli - Git
+-------------------------------------
+git remote add azure https.... .git
+
+git push azure master
+-------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+Test Kafka Applications
+--------------------------------------------------------------------------------------
+
+-------------------------------------
+https://github.com/fenago/event-hub-azure-kafka-spring/tree/master/event-hub-azure
+	- Hands-on
+	- Create Event Hub Azure
+	
+-------------------------------------
+https://github.com/stefan-hudelmaier/azure-event-hubs-kafka-example
+	- Example
+	- Producer 
+	- Consumer
+	
+-------------------------------------
+https://github.com/kartik-kaushik/SpringBootAzureEventHubKafka/tree/master/spring-boot-kafka-master
+	- Example
+	- Producer - Class Wrapper 
+	- Consumer - Class Wrapper
+	
+-------------------------------------
+https://github.com/Azure-Samples/azure-spring-boot-samples/tree/spring-cloud-azure_v4.3.0/eventhubs
+
+-------------------------------------
+https://github.com/Azure-Samples/azure-spring-boot-samples/tree/spring-cloud-azure_v4.3.0/cosmos
+	MongoDB -> CosmosDB
+	
+-------------------------------------
+Kafka Azure Blob Storage connector
+https://github.com/antonmry/spring-azure-blog-storage-connector
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+JBang
+-------------------------------------
+https://www.schoolofnet.com/canal-direto-ao-ponto/trabalhando-com-scripts-java-com-jbang/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- NÃO FUNCIONA
+az acs create --name acs-swarm-broker-drone-cloud --orchestrator-type Swarm --resource-group rscgp-broker-drone-cloud --generate-ssh-keys
+az acs create --name acs-swarm-broker-drone-cloud --orchestrator-type dockerce --resource-group rscgp-broker-drone-cloud --generate-ssh-keys
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
