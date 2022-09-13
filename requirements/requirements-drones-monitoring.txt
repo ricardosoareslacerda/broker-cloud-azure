@@ -1,4 +1,4 @@
-https://github.com/ricardosoareslacerda/broker-drone-cluster-monitor
+https://github.com/ricardosoareslacerda/broker-cloud-azure.git
 ---------------------------------------------------------------------------
 Container & Virtualization
 ---------------------------------------------------------------------------
@@ -9,7 +9,7 @@ Container & Virtualization
 	- temperatura >= 35 ou <= 0
 	- umidade <= 15%
 
-- drone-cluster-monitor-job
+- drone-cloud-azure-job
 ---------------------------------------------------------------------------
 	- DroneScheduller
 		- cron-scheduller de 10/10s 
@@ -21,14 +21,14 @@ Container & Virtualization
 	- DroneServices
 		- envia para o serviço rest
 	
-- drone-cluster-monitor-producer
+- drone-cloud-azure-producer
 ---------------------------------------------------------------------------
 	- controller
 		- recebe dados drone
 	- producer
 		- envia para o topico
 		
-- drone-cluster-monitor-consumer
+- drone-cloud-azure-consumer
 ---------------------------------------------------------------------------
 	- listener
 		recebe dados drone

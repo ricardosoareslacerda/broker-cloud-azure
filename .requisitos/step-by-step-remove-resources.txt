@@ -1,2 +1,0 @@
-Step by Step - Kafka (Event Hub, Consumer/Producer), Mongo (Docker), Mongo Express  (Docker)
-1- 

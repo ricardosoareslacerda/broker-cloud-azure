@@ -20,16 +20,18 @@ Step by Step - MongoDb / MongoExpress
 
 2 - docker context use aci-broker-cloud
 
-3 - docker compose --file stack-cloud-azure-database.yml up
+3 - cd step-by-step-create-remote-resources
 
-4 - docker ps -a 
+4 - docker compose --file ./docker-compose-stacks/stack-compose-database.yml up
 
-5 - copia os url dos container Mongo Express
+5 - docker ps -a
+
+6 - copia os url dos container Mongo Express
 	- mongo-dronedb.brazilsouth.azurecontainer.io:8081
 		- root
 		- MongoExpress2022!
 
-6 - Create Database 'drones'
+7 - Create Database 'dronedb'
 
 ---------------------------------
 Step by Step - Event Hubs Kafka
@@ -52,7 +54,7 @@ Step by Step - Event Hubs Kafka
 5 - /**** Lista as autorizações para o namespace Events Hub criado ****/
   -	/** Copiar o conteúdo primaryConnectionString conforme exemplo abaixo: **/
 	Ex.:
-	- Endpoint=sb://drone-namespace.servicebus.windows.net/;SharedAccessKeyName=authorization-drone-namespace;SharedAccessKey=3maslymZqSpRWRwX7PMp3WmXwMZRYhe6quBF9g0BPTM=;EntityPath=drone-topic
+	- Endpoint=sb://drone-namespace.servicebus.windows.net/;SharedAccessKeyName=authorization-drone-namespace;SharedAccessKey=tbhcShhDnHyurIeqLL7iAiQctPH6V2QmHHPduxxh+ik=;EntityPath=drone-topic
   - /** Posteriormente irá colar nas configurações dos aplicativos Producer e Consumer **/
 
 ---------------------------------
@@ -88,16 +90,16 @@ Step by Step - Applications
 5 - Acesso SwaggerUI 
 	- https://app-drone-broker-cloud-producer.azurewebsites.net/api/v2/drones-monitor/swagger-ui/
 	Teste PUT - JSON
-	{
-	  "id": "drone10",
-	  "name": "Drone Sao Paulo Leste",
-	  "latitude": -23.5,
-	  "longitude": -46.6,
-	  "temperature": 77.0795392390535738513790420256555080413818359375,
-	  "humidity": 55.07025929504701622363427304662764072418212890625,
-	  "rastreability": true,
-	  "lastUpdate": "2022-04-18T07:25:35.006"
-	}
+{
+  "id": "drone10",
+  "name": "Drone Sao Paulo Leste",
+  "latitude": -23.5,
+  "longitude": -46.6,
+  "temperature": 77.0795392390535738513790420256555080413818359375,
+  "humidity": 55.07025929504701622363427304662764072418212890625,
+  "rastreability": true,
+  "lastUpdate": "2022-04-18T07:25:35.006"
+}
 
 6 - Email enviado - Assunto 'Drone Alert Information - Drone Falling'
 	- Instruções de configuração no projeto /*** drone-cloud-azure-consumer ***/
@@ -117,32 +119,3 @@ Step by Step - Applications
 	- region = 'brazilsouth'
 	
 2 - Executar - gradle azurewebapp
-
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-DELETE RESOURCES
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Docker Resources
-- MongoDb
-- Mongo Express
-docker context use aci-broker-cloud
-
-docker compose --file stack-cloud-azure-database.yml down --project-name docker-compose-stacks
-
-docker ps -a 
-
--- Service - Job
-az webapp delete --name app-drone-broker-cloud-job --resource-group rscgrp-broker-cloud
-
--- Service - Producer
-az webapp delete --name app-drone-broker-cloud-producer --resource-group rscgrp-broker-cloud
-
-WebApp Resources
--- Service - Consumer
-az webapp delete --name app-drone-broker-cloud-consumer --resource-group rscgrp-broker-cloud
-
-Event Hub
-az eventhubs namespace delete --name drone-namespace --resource-group rscgrp-broker-cloud
-
-Resouce Group
-az group delete --name rscgrp-broker-cloud

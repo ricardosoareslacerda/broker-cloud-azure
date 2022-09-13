@@ -1,0 +1,27 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DELETE RESOURCES
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Docker Resources
+- MongoDb
+- Mongo Express
+docker context use aci-broker-cloud
+
+docker compose --file ./docker-compose-stacks/stack-compose-database.yml down docker-compose-stacks
+
+docker ps -a 
+
+-- Service - Job
+az webapp delete --name app-drone-broker-cloud-job --resource-group rscgrp-broker-cloud
+
+-- Service - Producer
+az webapp delete --name app-drone-broker-cloud-producer --resource-group rscgrp-broker-cloud
+
+WebApp Resources
+-- Service - Consumer
+az webapp delete --name app-drone-broker-cloud-consumer --resource-group rscgrp-broker-cloud
+
+Event Hub
+az eventhubs namespace delete --name drone-namespace --resource-group rscgrp-broker-cloud
+
+Resouce Group
+az group delete --name rscgrp-broker-cloud --yes

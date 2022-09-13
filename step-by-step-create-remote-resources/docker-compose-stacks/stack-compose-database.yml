@@ -6,9 +6,6 @@ services:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: MongoDB2022!
             MONGO_INITDB_DATABASE: dronedb
-        #volumes:
-        #    - dronedb:/var/run/docker.sock
-        #    - dronedb:/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
         domainname: "mongo-dronedb"
         container_name: mongo-dronedb
         hostname: mongo-dronedb
@@ -45,9 +42,3 @@ services:
 networks:
     broker-net:
         name: broker-net
-#volumes:
-#    dronedb:
-#        driver: azure_file
-#        driver_opts:
-#            share_name: storagesharebrokerdronecloud
-#            storage_account_name: storagebrokerdronecloud 
